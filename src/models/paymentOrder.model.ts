@@ -1,0 +1,5 @@
+import mongoose, { Schema, type Types } from 'mongoose';
+interface PaymentOrder { student: Types.ObjectId; batch: Types.ObjectId; examination: string; amount: number; currency: string; status: 'creating' | 'pending' | 'paid' | 'failed'; razorpayOrderId?: string; razorpayPaymentId?: string; enrollment?: Types.ObjectId; paidAt?: Date }
+const schema = new Schema<PaymentOrder>({ student: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true }, batch: { type: Schema.Types.ObjectId, ref: 'Batch', required: true, index: true }, examination: { type: String, required: true }, amount: { type: Number, required: true, min: 100 }, currency: { type: String, default: 'INR' }, status: { type: String, enum: ['creating', 'pending', 'paid', 'failed'], required: true }, razorpayOrderId: { type: String, unique: true, sparse: true }, razorpayPaymentId: { type: String, unique: true, sparse: true }, enrollment: { type: Schema.Types.ObjectId, ref: 'BatchEnrollment' }, paidAt: Date }, { timestamps: true });
+schema.index({ student: 1, batch: 1, status: 1 });
+export const PaymentOrder = mongoose.model<PaymentOrder>('PaymentOrder', schema);
